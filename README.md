@@ -9,5 +9,5 @@
 +At the request of the person, additions are left to the creativity of stickers can be made.
 
 
-
 https://www.youtube.com/watch?v=r90XN22Sc9w
+
