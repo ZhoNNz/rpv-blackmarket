@@ -40,9 +40,6 @@ end)
 
 local password = "a" 
 local car = 'rumpo3'
-
-
-
 local purchased = 0
 local opened = 0
 local drivingStyle = 786603
