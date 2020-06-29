@@ -14,7 +14,7 @@ local Keys = {
 ESX = nil
 local PlayerData = {}
 local yap = false
-local yazi = false
+local text = false
 
 
 Citizen.CreateThread(function()
@@ -35,44 +35,45 @@ AddEventHandler('esx:playerLoaded', function(xPlayer)
     PlayerData = xPlayer
 end)
 
-local SekretneHaslo = "a" 
-local Ticariarac = 'rumpo3'
 
 
 
-local Zakupiono = 0
-local acildi = 0
+local password = "a" 
+local car = 'rumpo3'
+
+
+
+local purchased = 0
+local opened = 0
 local drivingStyle = 786603
 local spawnRadius = 160
 local timer = 0
-local zrespione = 0
-local wybieranie = false
+local spy = 0
+local selection = false
 
 
 
 
 
 
---00000000000000000000000000000000000000000000000000000000000000000000-----
--- function satinalMenu()
-satinalMenu = function()
+BuyMenu = function()
     local player = PlayerPedId()
     FreezeEntityPosition(player,true)
     
     local elements = {
-        { label = "Satın al", action = "Satis_Buy_Menu" },	}
+        { label = "Buy", action = "Buy_Buy_Menu" },	}
         
-    ESX.UI.Menu.Open('default', GetCurrentResourceName(), "esx_Satis_main_menu",
+    ESX.UI.Menu.Open('default', GetCurrentResourceName(), "esx_Buy_main_menu",
         {
-            title    = "Black Karavan",
+            title    = "BlackCar",
             align    = "top-left",
             elements = elements
         },
     function(data, menu)
         local action = data.current.action
 
-        if action == "Satis_Buy_Menu" then
-            SatinAlmaMenu()
+        if action == "Buy_Buy_Menu" then
+            PurchasingMenu()
         elseif action == "PawnShop_Sell_Menu" then
             Kapat()
         end	
@@ -84,12 +85,12 @@ satinalMenu = function()
     end)
 end
 
-function SatinAlmaMenu()
+function PurchasingMenu()
     local player = PlayerPedId()
     FreezeEntityPosition(player,true)
     local elements = {}
             
-    for k,v in pairs(Config.Satis) do
+    for k,v in pairs(Config.Sales) do
         if v.BuyInPawnShop == true then
             table.insert(elements,{label = v.label .. " | "..('<span style="color:green;">%s</span>'):format("$"..v.BuyPrice..""), itemName = v.itemName, BuyInPawnShop = v.BuyInPawnShop, BuyPrice = v.BuyPrice})
         end
@@ -97,7 +98,7 @@ function SatinAlmaMenu()
         
     ESX.UI.Menu.Open('default', GetCurrentResourceName(), "PrisonBuyMenu",
         {
-            title    = "Ne almak istiyorsun?",
+            title    = "What do you want to buy?",
             align    = "top-left",
             elements = elements
         },
@@ -115,7 +116,7 @@ end
 
 function OpenBuyDialogMenu(itemName, BuyPrice)
 	ESX.UI.Menu.Open('dialog', GetCurrentResourceName(), 'PrisonDialog', {
-		title = "Satın Alacak Miktar?"
+		title = "Amount to Buy?"
 	}, function(data, menu)
 		menu.close()
 		amountToBuy = tonumber(data.value)
@@ -128,16 +129,14 @@ function OpenBuyDialogMenu(itemName, BuyPrice)
 end
 
 
-function Soru()
+function Question()
   ESX.UI.Menu.Open('dialog',GetCurrentResourceName(),'Menu',{title='Dostum parolayı hatırlıyorsun değil mi?'},
     function(a,b)b.close()
       local player = PlayerPedId()
 
 
-      if a.value=='siktir'or a.value=='annen'or a.value=='amk'then 
-        -- ESX.ShowAdvancedNotification('Handlarz','Połączenie','O ty kurwo obrzydliwa pożałujesz tego.','CHAR_BLANK_ENTRY',1)
-        TriggerEvent('notification', 'KİŞİ :: Dostum kelimerine dikkat etsen iyi olacak gibi.', 2)
-        -- ClearPedTasksImmediately(PlayerPedId())
+      if a.value=='fuck off'or a.value=='mom fuck'or a.value=='shit'then 
+        TriggerEvent('notification', 'MAN :: As if you should pay attention to the word buddy.', 2)
         ClearPedTasks(PlayerPedId())
 
         print(PlayerPedId())
@@ -145,18 +144,14 @@ function Soru()
       print('chat masse')
         return 
       end
-      if a.value==SekretneHaslo then
-        -- ESX.ShowAdvancedNotification('Handlarz','Połączenie','Dobra, widze wiesz o co chodzi. Mam już twój GPS nie ruszaj się zaraz tam podjadę.','CHAR_BLANK_ENTRY',1)
-        TriggerEvent('notification', 'KİŞİ :: Tamamdır patron! Yoldayım geliyorum konumundan ayrılma!.', 3)
-        NPColustur()
-        -- ClearPedTasksImmediately(PlayerPedId())
+      if a.value==password then
+        TriggerEvent('notification', 'MAN :: All right, boss! Im on my way, dont leave your position!', 3)
+        NPCreate()
         ClearPedTasks(PlayerPedId())
 
       else
-        -- ESX.ShowAdvancedNotification('Handlarz','Połączenie','Sory nie wiem o czym mówisz, nie dzwoń więcej pod ten numer.','CHAR_BLANK_ENTRY',1)
-        TriggerEvent('notification', 'KİŞİ :: Neyden bahsettiğini anlamadım, bir daha arama.', 2)
+        TriggerEvent('notification', 'MAN :: I didnt understand what you re talking about, dont call again.', 2)
         Citizen.Wait(500)
-      -- ClearPedTasksImmediately(PlayerPedId())
       ClearPedTasks(PlayerPedId())
 
         end 
@@ -167,57 +162,51 @@ end
 
 RegisterNetEvent('rpv-blackmarket:hedef')
 AddEventHandler('rpv-blackmarket:hedef', function()
-NPColustur()
+NPCreate()
 end)
 
-
--- RegisterCommand('hedef', function()
---   NPColustur()
---   print('Hedef yola çıktı')
---   TriggerEvent('chat:addMessage', -1, {
---     template = '<div class="chat-message durum"><b>BLACKMARKET STATUS :</b> Komut devreye girdi</div>',
---     args = { user, msg }
--- })
--- end)
-
-function NPColustur()
+function NPCreate()
   player=GetPlayerPed(-1)
   playerPos=GetEntityCoords(player)
+
   local a=GetHashKey('a_m_m_farmer_01')
-  RequestModel(a)
-  local b=GetHashKey(Ticariarac)
-  RequestModel(b)
-  while not HasModelLoaded(a)and RequestModel(a)or not HasModelLoaded(b)and RequestModel(b)do RequestModel(a)
+  local b=GetHashKey(car)
+
+    RequestModel(a)
     RequestModel(b)
-    Citizen.Wait(0)
-  end
-  Spawncar(playerPos.x,playerPos.y,playerPos.x,b,a)
-  Hedef(playerPos.x,playerPos.y,playerPos.z,towTruck,towTruckDriver,b,targetVeh)
+    while not HasModelLoaded(a)and RequestModel(a)or not HasModelLoaded(b)and RequestModel(b)do RequestModel(a)
+     RequestModel(b)
+      Citizen.Wait(0)
+    end
+    Spawncar(playerPos.x,playerPos.y,playerPos.x,b,a)
+    Hedef(playerPos.x,playerPos.y,playerPos.z,towTruck,towTruckDriver,b,targetVeh)
 end
 
 function Spawncar(a,b,c,d,e)
   local f,g,h=GetClosestVehicleNodeWithHeading(a+math.random(-spawnRadius,spawnRadius),b+math.random(-spawnRadius,spawnRadius),c,0,3,0)
-  if f and HasModelLoaded(d)and HasModelLoaded(d)then 
-    zrespione=1
-    towTruck=CreateVehicle(d,g,h,true,false)ClearAreaOfVehicles(GetEntityCoords(towTruck),5000,false,false,false,false,false)
-    SetVehicleOnGroundProperly(towTruck)
-    SetVehicleColours(towTruck,111,111)
-    towTruckDriver=CreatePedInsideVehicle(towTruck,26,e,-1,true,false)
-    towTruckDriver2=CreatePedInsideVehicle(towTruck,25,e,-1,true,false)
-    SetEntityInvincible(towTruckDriver,true)
-    SetBlockingOfNonTemporaryEvents(towTruckDriver,true)
-    towTruckBlip=AddBlipForEntity(towTruck)
-    GetVehicleDoorLockStatus(towTruck, 2)
-    SetBlipFlashes(towTruckBlip,true)
-    SetBlipColour(towTruckBlip,22)
-    BeginTextCommandSetBlipName("STRING")
-    AddTextComponentString('Arac')
-    EndTextCommandSetBlipName(towTruckBlip)
-  end 
+    if f and HasModelLoaded(d)and HasModelLoaded(d)then 
+      spy=1
+        towTruck=CreateVehicle(d,g,h,true,false)ClearAreaOfVehicles(GetEntityCoords(towTruck),5000,false,false,false,false,false)
+        SetVehicleOnGroundProperly(towTruck)
+        SetVehicleColours(towTruck,111,111)
+        towTruckDriver=CreatePedInsideVehicle(towTruck,26,e,-1,true,false)
+        towTruckDriver2=CreatePedInsideVehicle(towTruck,25,e,-1,true,false)
+        SetEntityInvincible(towTruckDriver,true)
+        SetBlockingOfNonTemporaryEvents(towTruckDriver,true)
+
+        
+        towTruckBlip=AddBlipForEntity(towTruck)
+        GetVehicleDoorLockStatus(towTruck, 2)
+        SetBlipFlashes(towTruckBlip,true)
+        SetBlipColour(towTruckBlip,22)
+        BeginTextCommandSetBlipName("STRING")
+        AddTextComponentString('Arac')
+        EndTextCommandSetBlipName(towTruckBlip)
+    end 
 end
 
 
-function Aracsil(a,b)
+function CarDelete(a,b)
   SetEntityAsMissionEntity(a,false,false)
   DeleteEntity(a)
   SetEntityAsMissionEntity(b,false,false)
@@ -228,45 +217,47 @@ end
 function Hedef(a,b,c,d,e,f,g)
   TaskVehicleDriveToCoord(e,d,a,b,c,10.0,0,f,drivingStyle,1,true)
   enroute=true 
-  while enroute==true do 
-    Citizen.Wait(500)
-    dist=GetDistanceBetweenCoords(GetEntityCoords(GetPlayerPed(-1)),GetEntityCoords(d).x,GetEntityCoords(d).y,GetEntityCoords(d).z,false)
-    if dist<15 then 
-      StartVehicleHorn(d,5000,GetHashKey("HELDDDOWN"),false)
-      TaskVehicleTempAction(e,d,27,-1)
-      -- SetVehicleDoorOpen(d,2,false,false)
-      -- SetVehicleDoorOpen(d,3,false,false)
-      SetVehicleDoorOpen(d,5,false,false)
-      GetVehicleDoorsLockedForPlayer(towTruck)
+    while enroute==true do 
+      Citizen.Wait(500)
+      dist=GetDistanceBetweenCoords(GetEntityCoords(GetPlayerPed(-1)),GetEntityCoords(d).x,GetEntityCoords(d).y,GetEntityCoords(d).z,false)
+      if dist<15 then 
+        StartVehicleHorn(d,5000,GetHashKey("HELDDDOWN"),false)
+        TaskVehicleTempAction(e,d,27,-1)
+        SetVehicleDoorOpen(d,5,false,false)
+        GetVehicleDoorsLockedForPlayer(towTruck)
 
-      RemoveBlip(towTruckBlip)
-      timer=20
-      enroute=false
-      -- ESX.ShowAdvancedNotification('Handlarz','Mówi','Masz '..math.floor(timer)..' sekund, po tym czasie zawijam biznes.','CHAR_BLANK_ENTRY',1)
-      TriggerEvent('notification', 'KİŞİ :: ' ..math.floor(timer).. ' saniye sonra buradan ayrılacağım.', 2)
-      Last()
-      Citizen.Wait(math.floor(timer))
-      SetVehicleDoorShut(d,5,false,false)
-    elseif dist<20 then
-       Citizen.Wait(2000)
-      end 
-    end 
-  end
+        RemoveBlip(towTruckBlip)
+        timer=20
+        enroute=false
+          TriggerEvent('notification', 'MAN :: ' ..math.floor(timer).. ' saniye sonra buradan ayrılacağım.', 2)
+          Last()
+          Citizen.Wait(math.floor(timer))
+          SetVehicleDoorShut(d,5,false,false)
+          elseif dist<20 then
+            Citizen.Wait(2000)
+          end 
+        end 
+      end
 
   function Last()
     local a,b,c=table.unpack(GetOffsetFromEntityInWorldCoords(towTruck,0.0,-3.3,-1.0))
+<<<<<<< HEAD
+    local d=GetEntityCoords(GetPlayerPed(-1),false)
+    local e=Vdist(d.x,d.y,d.z,a,b,c)
+    local a,b,c=table.unpack(GetOffsetFromEntityInWorldCoords(towTruck,0.0,-3.3,-1.0))
+     selection=true
+      while selection do 
+      Citizen.Wait(0)
+=======
     wybieranie=true
     while wybieranie do 
       Citizen.Wait(0)
       local a,b,c=table.unpack(GetOffsetFromEntityInWorldCoords(towTruck,0.0,-3.3,-1.0))
+>>>>>>> 519f29ef25b10246c7442f21acc33bce5017065b
       DrawMarker(20,a,b,c,0,0,0,0,0,0,1.0,2.3,1.0,0,205,50,100,9,0,0,0)
-      -- DrawMarker(20, a, b, Olay.z-0.90, 0, 0, 0, 0, 0, 0, 1.301, 1.3001, 1.3001, 0, 205, 250, 200, 0, 0, 0, 0) 
-      local d=GetEntityCoords(GetPlayerPed(-1),false)
-      local e=Vdist(d.x,d.y,d.z,a,b,c)
       if e<=1 then 
-        -- DrawText3D(a,b,c+1,'~y~[E]~w~  Erişmek için')
         if IsControlJustPressed(0,Keys['E'])then 
-        satinalMenu()
+        BuyMenu()
       end 
     end 
   end 
@@ -276,34 +267,112 @@ function Hedef(a,b,c,d,e,f,g)
 Citizen.CreateThread(function()
   while true do 
     Citizen.Wait(500)
-    if acildi==1 then 
+    if opened==1 then 
       if IsPedStill(GetPlayerPed(-1))then
        else
          ESX.UI.Menu.CloseAll()
-         acildi=0 
+         opened=0 
         end 
       end
       if timer>=1 then
-        if zrespione==1 then
+        if spy==1 then
            timer=timer-0.5
            if timer<=1 then
-             wybieranie=false
-             zrespione=0
+             selection=false
+             spy=0
              TaskVehicleDriveWander(towTruckDriver,towTruck,50.0,drivingStyle)
              SetVehicleDoorShut(towTruck,2,false)
              SetVehicleDoorShut(towTruck,3,false)
              GetVehicleDoorsLockedForPlayer(towTruck)
 
              timer=0
-            --  ESX.ShowAdvancedNotification('Handlarz','Mówi','Dobra czas na mnie, zawijam stąd zanim pojawi się policja.','CHAR_BLANK_ENTRY',1)
-             TriggerEvent('notification', 'KİŞİ :: Başka zaman görüşürüz, zamanım doldu. CYAA!!', 2)
+             TriggerEvent('notification', 'MAN :: See you another time, my time is up. CyA !!', 2)
              Citizen.Wait(60000)
-             Aracsil(towTruck,towTruckDriver)
+             CarDelete(towTruck,towTruckDriver)
             end 
           end 
         end 
       end 
     end)
+
+
+
+
+
+RegisterNetEvent('rpv-blackmarket:Access')
+AddEventHandler('rpv-blackmarket:Access',function()
+  if spy==0 then
+  else
+    TriggerEvent('notification', 'MAN :: See you another time, my time is up. CyA !!', 2)
+    return
+  end
+  TriggerEvent('notification', 'MAN :: Where did you get this number? What do you want from me?', 2)
+
+  Citizen.Wait(500)
+  Question()
+end)
+
+
+
+--===============================================================================
+
+--          npc
+
+--===============================================================================
+
+
+Citizen.CreateThread(function()
+  while true do
+    local player = PlayerPedId()
+    local tasking = true
+    local text = true
+    local crds = GetEntityCoords(dealer)
+
+      Citizen.Wait(0)
+      rnd = math.random(1,#sellercoords)
+          local plyCoords = GetEntityCoords(GetPlayerPed(-1), false) 
+          local dist = Vdist(plyCoords.x, plyCoords.y, plyCoords.z ,sellercoords[rnd]["x"],sellercoords[rnd]["y"],sellercoords[rnd]["z"])
+          
+
+          if dist <= 25000.0  then
+            if not DoesEntityExist(dealer) then
+              RequestModel("mp_m_execpa_01") 
+              while not HasModelLoaded("mp_m_execpa_01") do
+                Wait(10)
+              end
+
+                dealer = CreatePed(26, "mp_m_execpa_01", sellercoords[rnd]["x"],sellercoords[rnd]["y"],sellercoords[rnd]["z"], sellercoords[rnd]["h"], 0, 0)
+                ClearPedTasks(dealer)
+                ClearPedSecondaryTask(dealer)
+                TaskSetBlockingOfNonTemporaryEvents(dealer, true)
+                SetPedFleeAttributes(dealer, 0, 0)
+                SetPedCombatAttributes(dealer, 17, 1)
+                TaskTurnPedToFaceEntity(dealer, PlayerPedId(), 1.0)
+                TaskStartScenarioInPlace(dealer, "WORLD_HUMAN_AA_SMOKE", 0, false)
+                print(sellercoords[rnd]["x"],sellercoords[rnd]["y"],sellercoords[rnd]["z"])
+            
+                if dist < 0.6 then
+                  if text == true then
+                    DrawText3D(crds["x"],crds["y"],crds["z"], "[E]")
+                    if IsControlJustPressed(0, Keys['E']) then
+                        text = false
+                        keypressed = true  
+                        PlaySoundFrontend(-1, "Mission_Pass_Notify", "DLC_HEISTS_GENERAL_FRONTEND_SOUNDS", 0)
+                        Citizen.Wait(150)
+                        TriggerEvent('notification', 'MAN :: Al bu telefon numarası, ara adamı.', 3)
+                        Citizen.Wait(500)
+                        Question()
+                        Wait(150000)
+                        SetEntityCoords(dealer, sellercoords[rnd]["x"],sellercoords[rnd]["y"],sellercoords[rnd]["z"], xAxis, yAxis, zAxis, clearArea)  
+
+                        Wait(100)
+                        end
+                    end
+                end
+            end
+        end
+    end
+end)
 
 
 function loadAnimDict(a)
@@ -313,55 +382,6 @@ function loadAnimDict(a)
   end 
 end
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
--- RegisterNetEvent('rpv-blackmarket:Weaponksmı')
--- AddEventHandler('rpv-blackmarket:Weaponkısmı',function(a)
---   GiveWeaponToPed(GetPlayerPed(-1),GetHashKey(a),100,false,true)
---   Citizen.Wait(500)
--- end)
-
-
-RegisterNetEvent('rpv-blackmarket:Erisim')
-AddEventHandler('rpv-blackmarket:Erisim',function()
-  if zrespione==0 then
-  else
-    -- ESX.ShowAdvancedNotification('Handlarz','Połączenie','Co dzwonisz przecie już jade!','CHAR_BLANK_ENTRY',1)
-    TriggerEvent('notification', 'KİŞİ :: Başka zaman görüşürüz, zamanım doldu. CYAA!!', 2)
-    return
-  end
-  -- ESX.ShowAdvancedNotification('Handlarz','Połączenie','Skąd masz ten numer? Powiedz mi czego oczekujesz?','CHAR_BLANK_ENTRY',1)
-  TriggerEvent('notification', 'KİŞİ :: Bu numarayı nereden aldın? Benden ne istiyorsun,  söyle?', 2)
-
-  Citizen.Wait(500)
-  Soru()
-end)
 
 function DrawText3D(a,b,c,d)
   local e,f,g=World3dToScreen2d(a,b,c)
@@ -378,112 +398,6 @@ function DrawText3D(a,b,c,d)
   DrawRect(f,g+0.0125,0.015+k,0.03,41,11,41,90)
 end
 
-
-
---===============================================================================
-
---          npc
-
---===============================================================================
--- local saticicoords = {x = -755.91, y = -619.8, z = 30.28, h = 2.13} 
--- local rnd = 0
-
-local saticicoords = {
-  [1] =  { ['x'] = -755.91,['y'] = -619.8,['z'] = 30.28,['h'] = 2.13},
-  [2] =  { ['x'] = -758.4,['y'] = -617.99,['z'] = 30.28,['h'] = 2.13},
-  [3] =  { ['x'] = -72.75,['y'] = 1900.5,['z'] = 196.6,['h'] = 279.67},
-  [4]  = { ['x'] = 1206.7,['y'] = 1857.45,['z'] = 78.92,['h'] = 50.28},
-  [5]  = { ['x'] = 1588.27,['y'] = -1833.63,['z'] = 94.74,['h'] = 146.45},
-  [6]  = { ['x'] = 773.93,['y'] = 2707.33,['z'] = 39.98,['h'] = 181.86},
-  -- [5] =  { ['x'] = -758.4,['y'] = -617.99,['z'] = 30.28,['h'] = 2.13},
-
-}
-
-
-
-
-local keypressed = false
-local rnd = 0
-
-Citizen.CreateThread(function()
-  while true do
-    local player = PlayerPedId()
-    local tasking = true
-    local yazi = true
-
-
-      Citizen.Wait(0)
-      rnd = math.random(1,#saticicoords)
-          local plyCoords = GetEntityCoords(GetPlayerPed(-1), false) 
-          local dist = Vdist(plyCoords.x, plyCoords.y, plyCoords.z ,saticicoords[rnd]["x"],saticicoords[rnd]["y"],saticicoords[rnd]["z"])
-        -- print(#saticicoords)
-    if dist <= 25000.0  then
-      if not DoesEntityExist(dealer) then
-      RequestModel("mp_m_execpa_01") 
-      while not HasModelLoaded("mp_m_execpa_01") do
-        Wait(10)
-      end
-
-        dealer = CreatePed(26, "mp_m_execpa_01", saticicoords[rnd]["x"],saticicoords[rnd]["y"],saticicoords[rnd]["z"], saticicoords[rnd]["h"], 0, 0)
-        ClearPedTasks(dealer)
-        ClearPedSecondaryTask(dealer)
-        TaskSetBlockingOfNonTemporaryEvents(dealer, true)
-        SetPedFleeAttributes(dealer, 0, 0)
-        SetPedCombatAttributes(dealer, 17, 1)
-        TaskTurnPedToFaceEntity(dealer, PlayerPedId(), 1.0)
-        TaskStartScenarioInPlace(dealer, "WORLD_HUMAN_AA_SMOKE", 0, false)
-        print(' ilk konum ; Ped ısınlandı')
-        print(saticicoords[rnd]["x"],saticicoords[rnd]["y"],saticicoords[rnd]["z"])
-      end
-    end
-    
-          if dist < 0.6 then
-              local crds = GetEntityCoords(dealer)
-              if yazi == true then
-              DrawText3D(crds["x"],crds["y"],crds["z"], "[E]")
-
-              if IsControlJustPressed(0, Keys['E']) then
-                yazi = false
-              -- end
-             
-                -- DrawText3D(crds["x"],crds["y"],crds["z"], "[E]")
-                keypressed = true
-                
-                PlaySoundFrontend(-1, "Mission_Pass_Notify", "DLC_HEISTS_GENERAL_FRONTEND_SOUNDS", 0)
-                Citizen.Wait(150)
-                TriggerEvent('notification', 'KİŞİ :: Al bu telefon numarası, ara adamı.', 3)
-                Citizen.Wait(500)
-
-
-                Soru()
-              Wait(150000)
-              SetEntityCoords(dealer, saticicoords[rnd]["x"],saticicoords[rnd]["y"],saticicoords[rnd]["z"], xAxis, yAxis, zAxis, clearArea)  
-              print(' Sornaki konum  ; Ped ısınlandı')
-              print(saticicoords[rnd]["x"],saticicoords[rnd]["y"],saticicoords[rnd]["z"])
-
-                Wait(100)
-              end
-           end
-        end
-    end
-end)
-
-
-
-
-function DeleteCreatedPed()
-	-- print("Ped siliniyor mu?")
-	if DoesEntityExist(dealer) then 
-		SetPedKeepTask(dealer, false)
-		TaskSetBlockingOfNonTemporaryEvents(dealer, false)
-		ClearPedTasks(dealer)
-		TaskWanderStandard(dealer, 10.0, 10)
-		SetPedAsNoLongerNeeded(dealer)
-
-		Citizen.Wait(20000)
-		DeletePed(dealer)
-	end
-end
 
 
 
