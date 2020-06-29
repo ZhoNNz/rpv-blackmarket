@@ -257,7 +257,7 @@ function Hedef(a,b,c,d,e,f,g)
     local a,b,c=table.unpack(GetOffsetFromEntityInWorldCoords(towTruck,0.0,-3.3,-1.0))
     wybieranie=true
     while wybieranie do 
-      Citizen.Wait(2)
+      Citizen.Wait(0)
       local a,b,c=table.unpack(GetOffsetFromEntityInWorldCoords(towTruck,0.0,-3.3,-1.0))
       DrawMarker(20,a,b,c,0,0,0,0,0,0,1.0,2.3,1.0,0,205,50,100,9,0,0,0)
       -- DrawMarker(20, a, b, Olay.z-0.90, 0, 0, 0, 0, 0, 0, 1.301, 1.3001, 1.3001, 0, 205, 250, 200, 0, 0, 0, 0) 
