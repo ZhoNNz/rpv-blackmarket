@@ -48,6 +48,11 @@ local timer = 0
 local spy = 0
 local selection = false
 
+local sellercoords =  {  -- This part was deleted while editing, I added it again, but you need to test it.
+	[1] =  { ['x'] = 483.17,['y'] = -1827.35,['z'] = 27.86,['h'] = 135.87},	
+}
+
+
 
 
 
