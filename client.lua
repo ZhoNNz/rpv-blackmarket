@@ -241,29 +241,23 @@ function Hedef(a,b,c,d,e,f,g)
         end 
       end
 
-  function Last()
-    local a,b,c=table.unpack(GetOffsetFromEntityInWorldCoords(towTruck,0.0,-3.3,-1.0))
-<<<<<<< HEAD
-    local d=GetEntityCoords(GetPlayerPed(-1),false)
-    local e=Vdist(d.x,d.y,d.z,a,b,c)
-    local a,b,c=table.unpack(GetOffsetFromEntityInWorldCoords(towTruck,0.0,-3.3,-1.0))
-     selection=true
-      while selection do 
-      Citizen.Wait(0)
-=======
-    wybieranie=true
-    while wybieranie do 
-      Citizen.Wait(0)
+    function Last()
       local a,b,c=table.unpack(GetOffsetFromEntityInWorldCoords(towTruck,0.0,-3.3,-1.0))
->>>>>>> 519f29ef25b10246c7442f21acc33bce5017065b
-      DrawMarker(20,a,b,c,0,0,0,0,0,0,1.0,2.3,1.0,0,205,50,100,9,0,0,0)
-      if e<=1 then 
-        if IsControlJustPressed(0,Keys['E'])then 
-        BuyMenu()
+      wybiernaie=true
+      while wybiernaie do 
+        Citizen.Wait(2)
+        local a,b,c=table.unpack(GetOffsetFromEntityInWorldCoords(towTruck,0.0,-3.3,-1.0))
+        DrawMarker(20,a,b,c,0,0,0,0,0,0,1.0,2.3,1.0,0,205,50,100,9,0,0,0)
+        local d=GetEntityCoords(GetPlayerPed(-1),false)
+        local e=Vdist(d.x,d.y,d.z,a,b,c)
+        if e<=1 then 
+          if IsControlJustPressed(0,Keys['E'])then 
+          satinalMenu()
+        end 
       end 
     end 
-  end 
-  end
+    end
+	
 
 
 Citizen.CreateThread(function()
